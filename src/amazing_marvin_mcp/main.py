@@ -324,6 +324,8 @@ async def create_task(
     category_id: str | None = None,
     due_date: str | None = None,
     note: str | None = None,
+    day: str | None = None,
+    label_ids: list[str] | None = None,
     debug: bool = False,
 ) -> StandardResponse:
     """Create a new task in Amazing Marvin.
@@ -334,6 +336,9 @@ async def create_task(
         category_id: Optional category ID for organization
         due_date: Optional due date in YYYY-MM-DD format
         note: Optional task notes/description
+        day: Optional day to schedule the task on, in YYYY-MM-DD format
+        label_ids: Optional label IDs to attach (see get_labels). Kanban
+            states are labels, so pass the ID of the state's label here.
 
     For creating multiple tasks, use batch_create_tasks() instead.
     For creating a project with tasks, use create_project_with_tasks().
@@ -342,13 +347,17 @@ async def create_task(
     try:
         api_client = create_api_client()
 
-        task_data = {"title": title}
+        task_data: dict[str, Any] = {"title": title}
         if project_id:
             task_data["parentId"] = project_id
         if category_id:
             task_data["categoryId"] = category_id
         if due_date:
             task_data["dueDate"] = due_date
+        if day:
+            task_data["day"] = day
+        if label_ids:
+            task_data["labelIds"] = label_ids
         if note:
             task_data["note"] = note
 
